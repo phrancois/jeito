@@ -1,3 +1,115 @@
-from django.db import models
+# -*- coding: utf8 -*-
 
-# Create your models here.
+from django.db import models
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.core.validators import RegexValidator
+
+from mptt.models import MPTTModel, TreeForeignKey
+
+
+class PersonManager(BaseUserManager):
+    def create_user(self, password=None, **kwargs):
+        user = self.model(**kwargs)
+        user.set_password(password)
+        user.save()
+        return user
+
+    def create_superuser(self, **kwargs):
+        return self.create_user(is_superuser=True, **kwargs)
+
+
+class Structure(MPTTModel):
+    number = models.CharField(
+        "Numéro", max_length=10, unique=True,
+        validators=[
+            RegexValidator('\d{10}', message="Le numéro de structure comporte 10 chiffres")
+        ]
+    )
+    name = models.CharField("Nom", max_length=100)
+    parent = TreeForeignKey('self', null=True, blank=True, related_name='children', db_index=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Structure"
+
+    class MPTTMeta:
+        order_insertion_by = ['name']
+
+
+class Function(models.Model):
+    code = models.CharField("Code", max_length=5, unique=True)
+    name_m = models.CharField("Nom masculin", max_length=100)
+    name_f = models.CharField("Nom féminin", max_length=100)
+
+    def __str__(self):
+        return self.name_m
+
+    class Meta:
+        verbose_name = "Fonction"
+
+
+class Rate(models.Model):
+    name = models.CharField("Tarif", max_length=256, unique=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Tarif"
+
+
+
+class Person(AbstractBaseUser):
+    GENDER_MALE = 1
+    GENDER_FEMALE = 2
+    GENDER_CHOICES = (
+        (GENDER_MALE,   "Masculin"),
+        (GENDER_FEMALE, "Féminin"),
+    )
+
+    number = models.CharField(
+        u'Numéro', max_length=6, unique=True,
+        validators=[
+            RegexValidator('\d{6}', message="Le numéro d'adhérent comporte 6 chiffres")
+        ]
+    )
+    first_name = models.CharField(u'Prénom', max_length=100, blank=True)
+    last_name = models.CharField(u'Nom', max_length=100, blank=True)
+    email = models.EmailField(u'Email', blank=True)
+    gender = models.IntegerField("Genre", blank=True, null=True, choices=GENDER_CHOICES)
+    is_superuser = models.BooleanField(u'Super-utilisateur', default=False)
+
+    USERNAME_FIELD = 'number'
+    objects = PersonManager()
+
+    class Meta:
+        verbose_name = "Personne"
+
+    def get_short_name(self):
+        return u'{first_name}'.format(**self.__dict__)
+
+    def get_full_name(self):
+        return u'{first_name} {last_name}'.format(**self.__dict__)
+
+    def is_staff(self):
+        return self.is_superuser
+
+    def is_active(self):
+        return True
+
+    def has_perm(self, perm, obj=None):
+        return self.is_superuser
+
+    def has_module_perms(self, app_label):
+        return self.is_superuser
+
+
+class Adhesion(models.Model):
+    person = models.ForeignKey(Person)
+    season = models.IntegerField("Saison")
+    date = models.DateField()
+    rate = models.ForeignKey(Rate, verbose_name="Tarif")
+    structure = models.ForeignKey(Structure, verbose_name="Structure", related_name='adherents')
+    function = models.ForeignKey(Function, verbose_name="Fonction")
