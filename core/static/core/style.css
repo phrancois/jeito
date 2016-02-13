@@ -1,0 +1,42 @@
+/*
+#F6A800 jaune
+#97BF0D vert
+#14A0C8 bleu
+#BD1220 rouge
+*/
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin: 10px 0 60px 0; /* bottom = footer height */
+}
+
+.main-logo {
+  background: url(/static/core/img/logo.png) no-repeat;
+  height: 180px;
+  width: 100%;
+}
+
+footer {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 60px;
+}
+
+footer .bandeau {
+  width: 100%;
+  height: 50px;
+  background-image: linear-gradient(to right, #16a0c8, #97be0d);
+}
+
+footer .logo {
+  margin-left: 50px;
+  height: 100%;
+  width: 50px;
+  background: url(/static/core/img/logo-blanc.svg), #22515C;
+}

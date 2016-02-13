@@ -1,5 +1,46 @@
-<html>
+<!DOCTYPE html>
+<html lang="fr">
+
+{% load staticfiles %}
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="{% static 'core/bootstrap3/css/bootstrap.css' %}" rel="stylesheet">
+  <link href="{% static 'core/style.css' %}" rel="stylesheet" type="text/css" media="all">
+  <title>EEDF - Jeito</title>
+</head>
+
 <body>
-  {% block content %}{% endblock content %}
+
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-3 col-lg-2">
+        <div class="main-logo"></div>
+        {% if request.user.is_authenticated %}
+          Bonjour {{ request.user.first_name }}
+          <a href="{% url 'core:logout' %}">Déconnexion</a>
+        {% endif %}
+      </div>
+      <div class="col-sm-9 col-lg-10">
+        <ol class="breadcrumb">
+          {% block breadcrumbs %}
+            <li><a href="{% url 'core:index' %}">Accueil</a></li>
+          {% endblock breadcrumbs %}
+        </ol>
+        {% block content %}{% endblock content %}
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="bandeau">
+      <div class="logo"></div>
+    </div>
+  </footer>
+
+  <script src="{% static 'core/js/jquery-1.12.0.min.js' %}"></script>
+  <script src="{% static 'core/bootstrap3/js/bootstrap.js' %}"></script>
+
 </body>
 </html>

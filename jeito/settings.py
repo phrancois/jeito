@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'crispy_forms',
     'core',
     'members',
     'docs',
@@ -112,3 +113,5 @@ AUTHENTICATION_BACKENDS = [
 ]
 LOGIN_URL = 'core:login'
 LOGIN_REDIRECT_URL = 'core:index'
+
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
