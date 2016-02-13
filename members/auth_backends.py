@@ -8,6 +8,7 @@ from members.models import Person
 
 class PersonBackend(ModelBackend):
     def authenticate(self, username=None, password=None):
+        username = username.zfill(6)
         person = super().authenticate(username, password)
         if person:
             return person
