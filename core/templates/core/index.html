@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<p>Salut {{ request.user.first_name }} !</p>
+<ul>
+  <li><a href="{% url 'core:logout' %}">Déconnexion</a></li>
+</ul>
+
+{% endblock content %}

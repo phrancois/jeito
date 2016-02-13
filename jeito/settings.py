@@ -105,3 +105,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
+
+AUTH_USER_MODEL = 'members.Person'
+AUTHENTICATION_BACKENDS = [
+    'members.auth_backends.PersonBackend',
+]
+LOGIN_URL = 'core:login'
+LOGIN_REDIRECT_URL = 'core:index'
