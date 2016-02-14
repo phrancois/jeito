@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block breadcrumbs %}
-  <li><a href="{% url 'core:index' %}">Accueil</a></li>
+  {{ block.super }}
   <li class="active">Connexion</li>
 {% endblock breadcrumbs %}
 

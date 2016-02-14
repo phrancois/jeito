@@ -2,9 +2,11 @@
 
 {% block content %}
 
-<p>Salut {{ request.user.first_name }} !</p>
-<ul>
-  <li><a href="{% url 'core:logout' %}">Déconnexion</a></li>
-</ul>
+<p>Bonjour {{ request.user.first_name.title }} ! Tu trouveras sur ce site :</p>
+
+<a href="{% url 'docs:index' %}" class="btn btn-primary">
+  <span class="glyphicon glyphicon-file"></span>
+  Une base documentaire
+</a>
 
 {% endblock content %}

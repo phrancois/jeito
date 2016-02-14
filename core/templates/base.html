@@ -18,14 +18,24 @@
       <div class="col-sm-3 col-lg-2">
         <div class="main-logo"></div>
         {% if request.user.is_authenticated %}
-          Bonjour {{ request.user.first_name }}
-          <a href="{% url 'core:logout' %}">Déconnexion</a>
+          <hr>
+          <div class="center-block">
+            <span class="glyphicon glyphicon-user"></span>
+            {{ request.user.first_name.title }}
+            ({{ request.user.number }})
+          </div>
+          <div class="center-block">
+            <a href="{% url 'core:logout' %}">
+              <span class="glyphicon glyphicon-lock"></span>
+              Déconnexion
+            </a>
+          </div>
         {% endif %}
       </div>
       <div class="col-sm-9 col-lg-10">
         <ol class="breadcrumb">
           {% block breadcrumbs %}
-            <li><a href="{% url 'core:index' %}">Accueil</a></li>
+            <li><a href="{% url 'core:index' %}"><span class="glyphicon glyphicon-home"></span> Accueil</a></li>
           {% endblock breadcrumbs %}
         </ol>
         {% block content %}{% endblock content %}
