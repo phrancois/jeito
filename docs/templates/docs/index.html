@@ -1,25 +1,51 @@
 {% extends 'base.html' %}
 
+
 {% block breadcrumbs %}
-  {{ block.super }}
-  <li class="active">Documents</li>
+
+{{ block.super }}
+<li class="active">Documents</li>
+
 {% endblock breadcrumbs %}
 
-{% block content %}
+{% block actions %}
+
+<hr>
 
 <a href="{% url 'docs:create' %}" class="btn btn-primary">
   <span class="glyphicon glyphicon-plus"></span>
   Ajouter un document
 </a>
 
-<ul>
-  {% for object in object_list %}
-    <li>
-      <a href="{{ object.file.url }}">{{ object.title }}</a>
-      <a href="{% url 'docs:update' object.pk %}"><span class="glyphicon glyphicon-pencil"></span></a>
-      <a href="{% url 'docs:delete' object.pk %}"><span class="glyphicon glyphicon-trash"></span></a>
-    </li>
-  {% endfor %}
-</ul>
+{% endblock actions %}
+
+
+{% block content %}
+
+<table class="table table-striped table-bordered table-hover">
+  <thead>
+    <tr>
+      <th>Titre</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for object in object_list %}
+      <tr>
+        <td>
+          <a href="{{ object.file.url }}">{{ object.title }}</a>
+        </td>
+        <td>
+          <a href="{% url 'docs:update' object.pk %}">
+            <span class="glyphicon glyphicon-pencil" title="Modifier"></span>
+          </a>
+          <a href="{% url 'docs:delete' object.pk %}">
+            <span class="glyphicon glyphicon-trash" title="Supprimer"></span>
+          </a>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
 
 {% endblock content %}
