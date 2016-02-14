@@ -163,14 +163,14 @@ class Command(BaseCommand):
         self.post('Accueil.aspx', params, event_validation=True)
 
         params = {
-            '__EVENTTARGET': 'ctl00$_ddSEASONs',
+            '__EVENTTARGET': 'ctl00$_ddSaisons',
             '__EVENTARGUMENT': '',
             '__aspxlab_obj_states': '',
             '__LASTFOCUS': '',
             'ctl00$_tbRechAdherent': '',
             'ctl00$_tbRechStructure': '',
             'ctl00$_ddDelegations': fonction,
-            'ctl00$_ddSEASONs': str(SEASON),
+            'ctl00$_ddSaisons': str(SEASON),
             'ctl00$RechercheRapideDociment$_tbTitre': '',
         }
         self.post('Accueil.aspx', params, event_validation=True)
@@ -188,7 +188,7 @@ class Command(BaseCommand):
             'ctl00$_tbRechAdherent': '',
             'ctl00$_tbRechStructure': '',
             'ctl00$_ddDelegations': fonction,
-            'ctl00$_ddSEASONs': SEASON,
+            'ctl00$_ddSaisons': SEASON,
             'ctl00$RechercheRapideDociment$_tbTitre': '',
             'ctl00$MainContent$_ddlRequetesExistantes': '-1',
             'ctl00$MainContent$_tbNomNouvelleRequete': '',
@@ -219,7 +219,7 @@ class Command(BaseCommand):
             'ctl00$_tbRechAdherent': '',
             'ctl00$_tbRechStructure': '',
             'ctl00$_ddDelegations': fonction,
-            'ctl00$_ddSEASONs': SEASON,
+            'ctl00$_ddSaisons': SEASON,
             'ctl00$RechercheRapideDociment$_tbTitre': '',
             'ctl00$MainContent$_ddlRequetesExistantes': '-1',
             'ctl00$MainContent$_tbNomNouvelleRequete': '',
