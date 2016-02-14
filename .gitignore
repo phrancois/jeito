@@ -1,5 +1,6 @@
 import_members.sh
 media/
+whoosh_index/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
