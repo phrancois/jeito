@@ -1,4 +1,5 @@
 import_members.sh
+media/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -40,3 +40,7 @@ footer .logo {
   width: 50px;
   background: url(/static/core/img/logo-blanc.svg), #22515C;
 }
+
+.btn + .btn {
+  margin-left: 20px;
+}

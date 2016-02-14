@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+
+{% block breadcrumbs %}
+
+  {{ block.super }}
+  <li><a href="{% url 'docs:index' %}">Documents</a></li>
+  <li class="active">{% if object %}Modifier{% else %}Ajouter{% endif %}</li>
+
+{% endblock breadcrumbs %}
+
+
+{% block content %}
+
+  <h1>{% if object %}Modifier le{% else %}Ajouter un{% endif %} document</h1>
+  {% crispy form %}
+
+{% endblock content %}
