@@ -40,6 +40,7 @@
   <thead>
     <tr>
       <th>Titre</th>
+      <th>Mots-clés</th>
       <th>Actions</th>
     </tr>
   </thead>
@@ -48,6 +49,11 @@
       <tr>
         <td>
           <a href="{{ object.object.file.url }}">{{ object.object.title }}</a>
+        </td>
+        <td>
+          {% for tag in object.object.tags.all %}
+            <a href="{% url 'docs:index' %}?q={{ tag }}">{{ tag }}</a>{% if not forloop.last %},{% endif %}
+          {% endfor %}
         </td>
         <td>
           <a href="{% url 'docs:update' object.pk %}">

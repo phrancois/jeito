@@ -6,6 +6,7 @@ from crispy_forms.layout import Layout, HTML
 from haystack.query import SearchQuerySet
 from . import forms as docs_forms
 from . import models as docs_models
+from .signals import post_form_save, post_form_delete
 
 
 class IndexView(LoginRequiredMixin, ListView):
@@ -48,17 +49,24 @@ class CrispyFormViewMixin(object):
         return form
 
 
-class DocumentCreateView(LoginRequiredMixin, CrispyFormViewMixin, CreateView):
+class SaveSignalMixin(object):
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        post_form_save.send(sender=self.model, instance=self.object)
+        return response
+
+
+class DocumentCreateView(LoginRequiredMixin, SaveSignalMixin, CrispyFormViewMixin, CreateView):
     model = docs_models.Document
-    fields = ('title', 'file')
+    fields = ('file', 'title', 'tags')
     success_url = reverse_lazy('docs:index')
     glyphicon = 'plus'
     submit_text = u"Ajouter"
 
 
-class DocumentUpdateView(LoginRequiredMixin, CrispyFormViewMixin, UpdateView):
+class DocumentUpdateView(LoginRequiredMixin, SaveSignalMixin, CrispyFormViewMixin, UpdateView):
     model = docs_models.Document
-    fields = ('title', 'file')
+    fields = ('file', 'title', 'tags')
     success_url = reverse_lazy('docs:index')
     submit_text = u"Modifier"
 
