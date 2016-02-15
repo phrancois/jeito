@@ -67,4 +67,8 @@
   </tbody>
 </table>
 
+{% if more %}
+  <p>Il y a plus de {{ limit }} documents. Merci de préciser votre recherche.</p>
+{% endif %}
+
 {% endblock content %}

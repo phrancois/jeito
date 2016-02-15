@@ -12,6 +12,7 @@ from .signals import post_form_save, post_form_delete
 class IndexView(LoginRequiredMixin, ListView):
     template_name = 'docs/index.html'
     model = docs_models.Document
+    limit = 50
 
     def get_queryset(self):
         qs = SearchQuerySet().models(docs_models.Document)
@@ -19,12 +20,15 @@ class IndexView(LoginRequiredMixin, ListView):
         if self.form.is_valid():
             q = self.form.cleaned_data.get('q', '')
             qs = qs.filter(content=q)
-        qs = qs.load_all()
+        self.count = qs.count()
+        qs = qs[:self.limit]
         return qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['form'] = self.form
+        context['more'] = self.count > self.limit
+        context['limit'] = self.limit
         return context
 
 
