@@ -63,3 +63,7 @@ footer span img.baseline {
 #docs-search-form {
   margin-bottom: 20px;
 }
+
+table.docs .label {
+    margin-left: .5em;
+}
