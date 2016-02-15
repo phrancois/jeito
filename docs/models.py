@@ -1,3 +1,4 @@
+from tika import parser
 from django.db import models
 from tagulous.models import TagField, TagModel
 
@@ -15,3 +16,7 @@ class Document(models.Model):
 
     def __str__(self):
         return self.title
+
+    def text(self):
+        parsed = parser.from_file(self.file.path)
+        return parsed['content']

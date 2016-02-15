@@ -1,2 +1,3 @@
 {{ object.title }}
 {{ object.tags.get_tag_string }}
+{{ object.text }}
