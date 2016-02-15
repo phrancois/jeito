@@ -1,2 +1,2 @@
 {{ object.title }}
-{{ object.tags.names|join:" " }}
+{{ object.tags.get_tag_string }}

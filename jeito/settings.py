@@ -33,7 +33,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'crispy_forms',
     'haystack',
-    'taggit',
+    'tagulous',
     'core',
     'members',
     'docs',
@@ -130,3 +130,12 @@ HAYSTACK_CONNECTIONS = {
     },
 }
 HAYSTACK_SIGNAL_PROCESSOR = 'docs.signals.DocumentSignalProcessor'
+
+SERIALIZATION_MODULES = {
+    'xml': 'tagulous.serializers.xml_serializer',
+    'json': 'tagulous.serializers.json',
+    'python': 'tagulous.serializers.python',
+    'yaml': 'tagulous.serializers.pyyaml',
+}
+TAGULOUS_AUTOCOMPLETE_JS = ()
+TAGULOUS_AUTOCOMPLETE_CSS = {}
