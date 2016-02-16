@@ -15,6 +15,7 @@ class Document(models.Model):
     title = models.CharField(u"Titre", max_length=200)
     tags = TagField(DocumentTags, verbose_name = u"Mots-clés", blank=True,
                     help_text = "Entrez une liste de mots-clés séparés par des virgules")
+    visible = models.BooleanField(u"Visible", default=True)
 
     def __str__(self):
         return self.title

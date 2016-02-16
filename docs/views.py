@@ -1,12 +1,13 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.urlresolvers import reverse_lazy
+from django.http import HttpResponseRedirect
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, HTML
 from haystack.query import SearchQuerySet
 from . import forms as docs_forms
 from . import models as docs_models
-from .signals import post_form_save, post_form_delete
+from .signals import post_form_save
 
 
 class IndexView(LoginRequiredMixin, ListView):
@@ -20,6 +21,7 @@ class IndexView(LoginRequiredMixin, ListView):
         if self.form.is_valid():
             q = self.form.cleaned_data.get('q', '')
             qs = qs.filter(content=q)
+        qs = qs.filter(visible=True)
         self.count = qs.count()
         qs = qs[:self.limit]
         return qs
@@ -78,3 +80,11 @@ class DocumentUpdateView(LoginRequiredMixin, SaveSignalMixin, CrispyFormViewMixi
 class DocumentDeleteView(LoginRequiredMixin, DeleteView):
     model = docs_models.Document
     success_url = reverse_lazy('docs:index')
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+        self.object.visible = False
+        self.object.save()
+        post_form_save.send(sender=self.model, instance=self.object)
+        return HttpResponseRedirect(success_url)
