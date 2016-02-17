@@ -1,8 +1,9 @@
 # -*- coding: utf8 -*-
 
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.core.validators import RegexValidator
+from django.utils.timezone import now
 
 from mptt.models import MPTTModel, TreeForeignKey
 
@@ -61,7 +62,7 @@ class Rate(models.Model):
 
 
 
-class Person(AbstractBaseUser):
+class Person(PermissionsMixin, AbstractBaseUser):
     GENDER_MALE = 1
     GENDER_FEMALE = 2
     GENDER_CHOICES = (
@@ -79,7 +80,6 @@ class Person(AbstractBaseUser):
     last_name = models.CharField(u'Nom', max_length=100, blank=True)
     email = models.EmailField(u'Email', blank=True)
     gender = models.IntegerField("Genre", blank=True, null=True, choices=GENDER_CHOICES)
-    is_superuser = models.BooleanField(u'Super-utilisateur', default=False)
 
     USERNAME_FIELD = 'number'
     objects = PersonManager()
@@ -93,21 +93,24 @@ class Person(AbstractBaseUser):
     def get_full_name(self):
         return u'{first_name} {last_name}'.format(**self.__dict__)
 
+    @property
     def is_staff(self):
         return self.is_superuser
 
+    @property
     def is_active(self):
-        return True
-
-    def has_perm(self, perm, obj=None):
-        return self.is_superuser
-
-    def has_module_perms(self, app_label):
-        return self.is_superuser
+        today = now()
+        if today.month < 9:
+            seasons = [today.year]
+        elif today.mont == 9:
+            seasons = [today.year, today.year + 1]
+        else:
+            seasons = [today.year + 1]
+        return self.adhesions.filter(season__in=seasons).exists()
 
 
 class Adhesion(models.Model):
-    person = models.ForeignKey(Person)
+    person = models.ForeignKey(Person, related_name='adhesions')
     season = models.IntegerField("Saison")
     date = models.DateField()
     rate = models.ForeignKey(Rate, verbose_name="Tarif")
