@@ -3,6 +3,8 @@ python:
   - "3.4"
 services:
   - postgresql
+env:
+  - CFLAGS=-O0
 before_script:
   - psql -c 'create database jeito;' -U postgres
   - cp jeito/settings_travis.py jeito/settings_local.py
