@@ -53,6 +53,7 @@ class Function(models.Model):
 
 class Rate(models.Model):
     name = models.CharField("Tarif", max_length=256, unique=True)
+    committed = models.BooleanField("Engagé associatif", default=False)
 
     def __str__(self):
         return self.name

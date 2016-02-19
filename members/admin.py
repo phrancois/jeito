@@ -17,7 +17,8 @@ class FunctionAdmin(admin.ModelAdmin):
 
 @admin.register(Rate)
 class RateAdmin(admin.ModelAdmin):
-    list_display = ('name', )
+    list_display = ('name', 'committed')
+    list_filter = ('committed', )
     search_fields = ('name', )
 
 

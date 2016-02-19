@@ -53,7 +53,7 @@
     axisY: {
     }
   };
-  $.getJSON("{% url 'members:adhesions_data' season reference %}", function(data) {
+  $.getJSON("{% url 'members:adhesions_data' %}?season={{ season }}&reference={{ reference }}&active={{ active|yesno:'on,off,' }}", function(data) {
     new Chartist.Line('.ct-chart', data, options);
   });
 </script>
