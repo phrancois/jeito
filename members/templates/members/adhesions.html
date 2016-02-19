@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load staticfiles %}
+{% load staticfiles crispy_forms_tags %}
 
 
 {% block breadcrumbs %}
@@ -12,7 +12,16 @@
 
 {% block content %}
 
+<div class="alert alert-danger" role="alert">
+  ATTENTION !!! Ces chiffres sont publiés sous réserve de validité des informations exportées par le portail
+  <a href="http//entrecles.eedf.fr">Entréclés</a>
+</div>
+
+{% crispy form %}
+
 <div class="ct-chart ct-minor-seventh"></div>
+
+<p id="info"></p>
 
 {% endblock content %}
 
@@ -53,8 +62,9 @@
     axisY: {
     }
   };
-  $.getJSON("{% url 'members:adhesions_data' %}?season={{ season }}&reference={{ reference }}&active={{ active|yesno:'on,off,' }}", function(data) {
+  $.getJSON("{% url 'members:adhesions_data' %}?season={{ season }}{% if reference %}&reference={{ reference }}{% endif %}{% if committed != None %}&committed={{ committed|yesno:'on,off' }}{% endif %}", function(data) {
     new Chartist.Line('.ct-chart', data, options);
+    $('#info').html(data['comment']);
   });
 </script>
 

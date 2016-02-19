@@ -67,3 +67,13 @@ footer span img.baseline {
 table.docs .label {
     margin-left: .5em;
 }
+
+.form-inline {
+  margin-bottom: 20px;
+}
+
+.form-inline .form-group + .form-group,
+.form-inline .checkbox,
+.form-inline button {
+  margin-left: 20px;
+}
