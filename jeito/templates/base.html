@@ -6,10 +6,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="{% static 'core/bootstrap3/css/bootstrap.css' %}" rel="stylesheet">
-  <link href="{% static 'tagulous/lib/select2-3/select2.css' %}" rel="stylesheet">
-  <link href="{% static 'core/css/select2-bootstrap.css' %}" rel="stylesheet">
-  <link href="{% static 'core/style.css' %}" rel="stylesheet" type="text/css" media="all">
+  {% block css %}
+    <link href="{% static 'core/bootstrap3/css/bootstrap.css' %}" rel="stylesheet">
+    <link href="{% static 'tagulous/lib/select2-3/select2.css' %}" rel="stylesheet">
+    <link href="{% static 'core/css/select2-bootstrap.css' %}" rel="stylesheet">
+    <link href="{% static 'core/style.css' %}" rel="stylesheet" type="text/css" media="all">
+  {% endblock css %}
   <title>EEDF - Jeito</title>
 </head>
 
@@ -69,11 +71,13 @@
     </div>
   </footer>
 
-  <script src="{% static 'core/js/jquery-1.12.0.min.js' %}"></script>
-  <script src="{% static 'core/bootstrap3/js/bootstrap.js' %}"></script>
-  <script src="{% static 'tagulous/lib/select2-3/select2.min.js' %}"></script>
-  <script src="{% static 'tagulous/tagulous.js' %}"></script>
-  <script src="{% static 'tagulous/adaptor/select2-3.js' %}"></script>
+  {% block js %}
+    <script src="{% static 'core/js/jquery-1.12.0.min.js' %}"></script>
+    <script src="{% static 'core/bootstrap3/js/bootstrap.js' %}"></script>
+    <script src="{% static 'tagulous/lib/select2-3/select2.min.js' %}"></script>
+    <script src="{% static 'tagulous/tagulous.js' %}"></script>
+    <script src="{% static 'tagulous/adaptor/select2-3.js' %}"></script>
+  {% endblock js %}
 
 </body>
 </html>

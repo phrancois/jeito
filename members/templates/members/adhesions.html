@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+
+{% block breadcrumbs %}
+
+{{ block.super }}
+<li class="active">Adhesions</li>
+
+{% endblock breadcrumbs %}
+
+
+{% block content %}
+
+<div class="ct-chart ct-minor-seventh"></div>
+
+{% endblock content %}
+
+
+{% block css %}
+
+{{ block.super }}
+<link href="{% static 'core/chartist/chartist.min.css' %}" rel="stylesheet">
+<style>
+.ct-label {
+  font-size: 1rem;
+}
+.ct-series-a .ct-line {
+  stroke: red;
+  stroke-width: 2px;
+  stroke-dasharray: 2px 2px;
+}
+.ct-series-b .ct-line {
+  stroke: red;
+  stroke-width: 2px;
+}
+</style>
+
+{% endblock css %}
+
+
+{% block js %}
+
+{{ block.super }}
+<script src="{% static 'core/chartist/chartist.min.js' %}"></script>
+<script>
+  var options = {
+    showPoint: false,
+    lineSmooth: false,
+    axisX: {
+      showGrid: false
+    },
+    axisY: {
+    }
+  };
+  $.getJSON("{% url 'members:adhesions_data' season reference %}", function(data) {
+    new Chartist.Line('.ct-chart', data, options);
+  });
+</script>
+
+{% endblock js %}
