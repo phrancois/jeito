@@ -4,8 +4,13 @@ python:
 services:
   - postgresql
   - elasticsearch
+cache:
+  - pip
 env:
   - CFLAGS=-O0
+install:
+  - pip install -U pip wheel
+  - pip install -r requirements.txt
 before_script:
   - psql -c 'create database jeito;' -U postgres
   - cp jeito/settings_travis.py jeito/settings_local.py
