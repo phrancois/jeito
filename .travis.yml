@@ -3,6 +3,7 @@ python:
   - "3.4"
 services:
   - postgresql
+  - elasticsearch
 env:
   - CFLAGS=-O0
 before_script:
