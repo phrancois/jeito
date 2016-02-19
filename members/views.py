@@ -1,7 +1,6 @@
-from datetime import date, timedelta
+from datetime import date
 from django.db import connection
 from django.http import JsonResponse
-from django.shortcuts import render
 from django.utils.timezone import now
 from django.views.generic import View, TemplateView
 from .forms import AdhesionsForm
@@ -38,7 +37,7 @@ class AdhesionsJsonView(View):
         reference = int(self.request.GET.get('reference', '0')) or season - 1
         if self.request.GET.get('committed') == 'on':
             committed = True
-        elif  self.request.GET.get('committed') == 'off':
+        elif self.request.GET.get('committed') == 'off':
             committed = False
         else:
             committed = None
@@ -81,7 +80,7 @@ class AdhesionsView(TemplateView):
         reference = self.request.GET.get('reference')
         if self.request.GET.get('committed') == 'on':
             committed = True
-        elif  self.request.GET.get('committed') == 'off':
+        elif self.request.GET.get('committed') == 'off':
             committed = False
         else:
             committed = None

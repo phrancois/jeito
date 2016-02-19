@@ -29,7 +29,8 @@ class PersonBackend(ModelBackend):
         }
         response = session.post('http://entrecles.eedf.fr/Default.aspx',
                                 params, allow_redirects=False)
-        if (response.status_code == requests.codes.found and
-            response.headers.get('Location') == '/Accueil.aspx'):
-            return person
-        return None
+        if response.status_code != requests.codes.found:
+            return None
+        if response.headers.get('Location') != '/Accueil.aspx':
+            return None
+        return person

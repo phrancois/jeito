@@ -62,12 +62,11 @@ class Rate(models.Model):
         verbose_name = "Tarif"
 
 
-
 class Person(PermissionsMixin, AbstractBaseUser):
     GENDER_MALE = 1
     GENDER_FEMALE = 2
     GENDER_CHOICES = (
-        (GENDER_MALE,   "Masculin"),
+        (GENDER_MALE, "Masculin"),
         (GENDER_FEMALE, "Féminin"),
     )
 

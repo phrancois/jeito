@@ -38,7 +38,7 @@ class Command(BaseCommand):
         params['__VIEWSTATE'] = self.tree.get_element_by_id('__VIEWSTATE').value
         params['__VIEWSTATEENCRYPTED'] = ''
         if event_validation:
-            params[ '__EVENTVALIDATION'] = self.tree.get_element_by_id('__EVENTVALIDATION').value
+            params['__EVENTVALIDATION'] = self.tree.get_element_by_id('__EVENTVALIDATION').value
         if not url.startswith('http://'):
             url = BASEURL + url
         self.stdout.write('POST ' + url)
@@ -48,10 +48,57 @@ class Command(BaseCommand):
         else:
             self.tree = lxml.html.fromstring(self.response.text)
 
+    def extract_line(self, cols):
+        if cols[1] == "Individu.CodeAdherent":
+            return
+        if cols[1] in ("eedfadmin", "supradmin"):  # Admin
+            return
+        if cols[39] != "0":  # Adhésion
+            return
+        self.nb += 1
+        try:
+            structure = Structure.objects.get(number=cols[4])
+        except Structure.DoesNotExist:
+            structure = self.get_structure(cols[4], parent=None, recursive=False)
+        try:
+            function, created = Function.objects.update_or_create(
+                code=cols[6],
+                defaults={
+                    'name_m': cols[8],
+                    'name_f': cols[9],
+                }
+            )
+            rate, created = Rate.objects.get_or_create(
+                name=cols[40]
+            )
+            person, created = Person.objects.update_or_create(
+                number=cols[1],
+                defaults={
+                    'gender': Person.GENDER_MALE if cols[0] == "M" else Person.GENDER_FEMALE,
+                    'last_name': cols[2],
+                    'first_name': cols[3],
+                    'email': cols[24],
+                }
+            )
+            if cols[39] == "0":
+                adhesion, created = Adhesion.objects.update_or_create(
+                    person=person,
+                    season=SEASON,
+                    defaults={
+                        'structure': structure,
+                        'function': function,
+                        'date': datetime.date(int(cols[37][6:10]), int(cols[37][3:5]), int(cols[37][0:2])),
+                        'rate': rate,
+                    }
+                )
+        except:
+            self.stdout.write("failed to create {}".format(cols))
+            raise
+
     def extract(self, f, length):
         current = b''
         done = 0
-        nb = 0
+        self.nb = 0
         percent = 0
         row = re.compile(b'<tr><td.*?>(.*?)</td></tr>(.*)$')
         col = re.compile(b'</td><td.*?>')
@@ -62,7 +109,7 @@ class Command(BaseCommand):
             done += len(new)
             if percent != int(done * 100 / length):
                 percent = int(done * 100 / length)
-                self.stdout.write('{0} ({1:02}%)'.format(nb, percent))
+                self.stdout.write('{0} ({1:02}%)'.format(self.nb, percent))
             current += new
             while True:
                 match = row.search(current)
@@ -70,52 +117,7 @@ class Command(BaseCommand):
                     break
                 cols = [unescape(s.decode('utf8')) for s in col.split(match.group(1))]
                 current = match.group(2)
-                if cols[1] == "Individu.CodeAdherent":
-                    continue
-                if cols[1] in ("eedfadmin", "supradmin"): # Admin
-                    continue
-                if cols[39] != "0": # Adhésion
-                    continue
-                nb += 1
-                try:
-                    structure = Structure.objects.get(number=cols[4])
-                except Structure.DoesNotExist:
-                    structure = self.get_structure(cols[4], parent=None, recursive=False)
-                try:
-                    function, created = Function.objects.update_or_create(
-                        code=cols[6],
-                        defaults={
-                            'name_m': cols[8],
-                            'name_f': cols[9],
-                        }
-                    )
-                    rate, created = Rate.objects.get_or_create(
-                        name=cols[40]
-                    )
-                    person, created = Person.objects.update_or_create(
-                        number=cols[1],
-                        defaults={
-                            'gender': Person.GENDER_MALE if cols[0] == "M" else Person.GENDER_FEMALE,
-                            'last_name': cols[2],
-                            'first_name': cols[3],
-                            'email': cols[24],
-                        }
-                    )
-                    if cols[39] == "0":
-                        adhesion, created = Adhesion.objects.update_or_create(
-                            person=person,
-                            season=SEASON,
-                            defaults={
-                                'structure': structure,
-                                'function': function,
-                                'date': datetime.date(int(cols[37][6:10]), int(cols[37][3:5]), int(cols[37][0:2])),
-                                'rate': rate,
-                            }
-                        )
-                except:
-                    self.stdout.write("failed to create {}".format(cols))
-                    raise
-                #self.stdout.write(str(person))
+                self.extract_line(cols)
 
     def handle(self, *args, **options):
         if not HOST:
@@ -209,7 +211,7 @@ class Command(BaseCommand):
             'ctl00$MainContent$_ddDecouverteEcle': '-1',
             'ctl00$MainContent$_ddInteret': '-1',
         }
-        response = self.post('Adherents/ExtraireAdherents.aspx', params)
+        self.post('Adherents/ExtraireAdherents.aspx', params)
 
         params = {
             '__EVENTTARGET': '',
@@ -239,7 +241,7 @@ class Command(BaseCommand):
             'ctl00$MainContent$_ddDecouverteEcle': '-1',
             'ctl00$MainContent$_ddInteret': '-1',
             'ctl00$MainContent$_cbExtraireIndividu': 'on',
-            #'ctl00$MainContent$_cbExtraireParents': 'on',
+            # 'ctl00$MainContent$_cbExtraireParents': 'on',
             'ctl00$MainContent$_cbExtraireInscription': 'on',
             'ctl00$MainContent$_cbExtraireAdhesion': 'on',
             'ctl00$MainContent$_btnExporter.x': '32',
@@ -251,45 +253,59 @@ class Command(BaseCommand):
 
         self.stdout.write('Done')
 
+    def get_children(self):
+        other_pages = []
+        children = []
+        for row in self.tree.get_element_by_id('ctl00_ctl00_MainContent_DivsContent__gvEnfants'):
+            if row.get('class') == 'pagination':
+                other_pages = [p.text_content() for p in row[0][0][0] if p[0].tag == 'a']
+            if row.get('class') not in ('ligne1', 'ligne2'):
+                continue
+            children.append(row[0][0].text)
+        for page in other_pages:
+            params = {
+                '__EVENTTARGET': 'ctl00$ctl00$MainContent$DivsContent$_gvEnfants',
+                '__EVENTARGUMENT': 'Page$' + page,
+                '__aspxlab_obj_states': '(::46:(ctl00_ctl00_MainContent_TabsContent_ctl00:1,))',
+                '__LASTFOCUS': '',
+            }
+            self.post(self.response.url, params, event_validation=True)
+            for row in self.tree.get_element_by_id('ctl00_ctl00_MainContent_DivsContent__gvEnfants'):
+                if row.get('class') not in ('ligne1', 'ligne2'):
+                    continue
+                children.append(row[0][0].text)
+        return children
+
     def get_structure(self, number, parent=None, recursive=False):
         self.get('Recherche.aspx?type=str&text={0}'.format(number))
         name = self.tree.get_element_by_id('ctl00_ctl00_MainContent_DivsContent__resume__lblNom').text
-        assert number == self.tree.get_element_by_id('ctl00_ctl00_MainContent_DivsContent__resume__lblCodeStructure').text
+        code_struct_id = 'ctl00_ctl00_MainContent_DivsContent__resume__lblCodeStructure'
+        assert number == self.tree.get_element_by_id(code_struct_id).text
 
         if number == '0000000000':
             parent = None
         elif parent is None:
-            parent_number = self.tree.get_element_by_id('ctl00_ctl00_MainContent_DivsContent__gvParents')[1][0].text_content()
+            parents_id = 'ctl00_ctl00_MainContent_DivsContent__gvParents'
+            parent_number = self.tree.get_element_by_id(parents_id)[1][0].text_content()
             try:
                 parent = Structure.objects.get(number=parent_number)
             except Structure.DoesNotExist:
                 parent = self.get_structure(parent_number)
 
         if recursive:
-            other_pages = []
-            children = []
-            for row in self.tree.get_element_by_id('ctl00_ctl00_MainContent_DivsContent__gvEnfants'):
-                if row.get('class') == 'pagination':
-                    other_pages = [p.text_content() for p in row[0][0][0] if p[0].tag == 'a']
-                if row.get('class') not in ('ligne1', 'ligne2'):
-                    continue
-                children.append(row[0][0].text)
-            for page in other_pages:
-                params = {
-                    '__EVENTTARGET': 'ctl00$ctl00$MainContent$DivsContent$_gvEnfants',
-                    '__EVENTARGUMENT': 'Page$' + page,
-                    '__aspxlab_obj_states': '(::46:(ctl00_ctl00_MainContent_TabsContent_ctl00:1,))',
-                    '__LASTFOCUS': '',
-                }
-                self.post(self.response.url, params, event_validation=True)
-                #print(self.response.text)
-                for row in self.tree.get_element_by_id('ctl00_ctl00_MainContent_DivsContent__gvEnfants'):
-                    if row.get('class') not in ('ligne1', 'ligne2'):
-                        continue
-                    children.append(row[0][0].text)
+            children = self.get_children()
 
-        structure, created = Structure.objects.update_or_create(number=number, defaults={'name': name, 'parent': parent})
-        self.stdout.write(u"Structure {number} ({name}) {op}".format(number=number, name=name, op=u"created" if created else u"updated"))
+        defaults = {
+            'name': name,
+            'parent': parent
+        }
+        structure, created = Structure.objects.update_or_create(number=number, defaults=defaults)
+        values = {
+            'number': number,
+            'name': name,
+            'op': u"created" if created else u"updated",
+        }
+        self.stdout.write(u"Structure {number} ({name}) {op}".format(**values))
         if recursive:
             for child in children:
                 self.get_structure(child, structure, recursive=True)

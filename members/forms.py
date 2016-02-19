@@ -7,7 +7,7 @@ from .utils import first_season, current_season
 class AdhesionsForm(forms.Form):
     season_choices = [
         (i, "{}/{}".format(i - 1, i))
-        for i in range(current_season(), first_season() - 1,  -1)
+        for i in range(current_season(), first_season() - 1, -1)
     ]
     season = forms.ChoiceField(label="Saison", choices=season_choices)
     reference = forms.ChoiceField(label="Référence", choices=[(None, "Année N-1")] + season_choices)

@@ -1,4 +1,4 @@
-from django.conf.urls import url, include
+from django.conf.urls import url
 from tagulous.views import autocomplete
 from .models import DocumentTags
 from . import views as docs_views

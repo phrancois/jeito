@@ -3,6 +3,7 @@
 from django.contrib import admin
 from .models import Structure, Function, Rate, Person, Adhesion
 
+
 @admin.register(Structure)
 class StructureAdmin(admin.ModelAdmin):
     list_display = ('number', 'name', 'parent')
