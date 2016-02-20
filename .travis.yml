@@ -13,8 +13,9 @@ install:
   - pip install coveralls
   - pip install -r requirements.txt
 before_script:
-  - psql -c 'create database jeito;' -U postgres
-  - cp jeito/settings_travis.py jeito/settings_local.py
+  - psql -c 'create user jeito createdb;' -U postgres
+  - psql -c 'create database jeito owner jeito;' -U postgres
+  - cp jeito/settings_local.py.template jeito/settings_local.py
 script:
   - flake8
   - coverage run manage.py test
