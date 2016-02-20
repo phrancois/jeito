@@ -13,14 +13,16 @@ Un espace de documentation participatif
 Sur une distribution GNU/Linux Ubuntu, dans un shell, exécute les commandes suivantes :
 
 ```bash
-$ sudo apt-get install git docker.io python3 python-virtualenv
-$ sudo docker run -e POSTGRES_USER jeito -p 5432:5432 -d postgres
+$ sudo apt-get install git docker.io python3 python-virtualenv python3-dev libpq-dev libxml2-dev libxslt1-dev
+$ sudo docker run -e POSTGRES_USER=jeito -p 5432:5432 -d postgres
 $ sudo docker run -p 9200:9200 -d elasticsearch
 $ sudo docker run -p 9998:9998 -d logicalspark/docker-tikaserver
 $ git clone https://github.com/eedf/jeito.git
 $ cd jeito
 $ virtualenv -p python3 env
+$ env/bin/pip install -U pip wheel
 $ env/bin/pip install -r requirements.txt
+$ cp jeito/settings_local.py.template jeito/settings_local.py
 $ ./manage.py migrate
 ```
 
