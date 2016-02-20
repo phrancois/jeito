@@ -101,14 +101,20 @@ class TranchesJsonView(View):
         total1 = sum(x['n'] for x in qs1)
         total2 = sum(x['n'] for x in qs2)
         assert total1 == total2
-        average_price = sum([x['n'] * x['rate__rate'] for x in qs2]) / total2
-        average_price_after_tax_ex = sum([x['n'] * x['rate__rate_after_tax_ex'] for x in qs2]) / total2
+        if qs.filter(rate__rate=None).exists():
+            comment = "Données manquantes pour calculer la cotisation moyenne"
+        else:
+            average_price = sum([x['n'] * x['rate__rate'] for x in qs2]) / total2
+            comment = "Cotisation moyenne : <strong>{:0.02f} €</strong>".format(float(average_price))
+        if qs.filter(rate__rate_after_tax_ex=None).exists():
+            comment += " (données manquantes pour calculer la cotisation moyenne après défiscalisation)"
+        else:
+            average_price_after_tax_ex = sum([x['n'] * x['rate__rate_after_tax_ex'] for x in qs2]) / total2
+            comment += " ({:0.02f} € après défiscalisation)".format(float(average_price_after_tax_ex))
         data = {
             'labels': [x['rate__bracket'] + ' (%0.0f %%)' % (100 * x['n'] / total1) for x in qs1],
             'series': [x['n'] for x in qs1],
-            'comment': """Cotisation moyenne : <strong>{:0.02f} €</strong>
-                          ({:0.02f} € après défiscalisation)
-                          """.format(float(average_price), float(average_price_after_tax_ex)),
+            'comment': comment,
         }
         return JsonResponse(data)
 
