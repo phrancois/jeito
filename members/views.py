@@ -1,9 +1,11 @@
 from datetime import date
 from django.db import connection
+from django.db.models import Count
 from django.http import JsonResponse
 from django.utils.timezone import now
 from django.views.generic import View, TemplateView
 from .forms import AdhesionsForm
+from .models import Adhesion
 
 
 class AdhesionsJsonView(View):
@@ -95,3 +97,24 @@ class AdhesionsView(TemplateView):
         context['form'] = form
         context.update(initial)
         return context
+
+
+class TranchesJsonView(View):
+
+    def get(self, request):
+        qs = Adhesion.objects.filter(season=2016, rate__name__icontains='enfant')
+        # qs = qs.exclude(rate__name__startswith='1er')
+        qs = qs.order_by('rate__bracket')
+        qs = qs.values('rate__bracket')
+        qs = qs.annotate(n=Count('id'))
+        total = sum(x['n'] for x in qs)
+        data = {
+            'labels': [x['rate__bracket'] + ' (%0.0f %%)' % (100 * x['n'] / total) for x in qs],
+            'series': [x['n'] for x in qs],
+            'comment': '',
+        }
+        return JsonResponse(data)
+
+
+class TranchesView(TemplateView):
+    template_name = 'members/tranches.html'

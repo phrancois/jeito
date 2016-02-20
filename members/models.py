@@ -54,6 +54,7 @@ class Function(models.Model):
 class Rate(models.Model):
     name = models.CharField("Tarif", max_length=256, unique=True)
     committed = models.BooleanField("Engagé associatif", default=False)
+    bracket = models.CharField("Tranche", max_length=100, blank=True)
 
     def __str__(self):
         return self.name
