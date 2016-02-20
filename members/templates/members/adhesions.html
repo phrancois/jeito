@@ -64,7 +64,7 @@
     axisY: {
     }
   };
-  $.getJSON("{% url 'members:adhesions_data' %}?season={{ season }}{% if reference %}&reference={{ reference }}{% endif %}{% if committed != None %}&committed={{ committed|yesno:'on,off' }}{% endif %}", function(data) {
+  $.getJSON("{% url 'members:adhesions_data' %}?season={{ season }}{% if reference %}&reference={{ reference }}{% endif %}{% if category %}&category={{ category }}{% endif %}", function(data) {
     new Chartist.Line('.ct-chart', data, options);
     $('#comment').html(data['comment']);
   });

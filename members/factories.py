@@ -25,7 +25,6 @@ class RateFactory(factory.django.DjangoModelFactory):
         model = models.Rate
 
     name = factory.Sequence(lambda n: "Rate %3d" % n)
-    committed = factory.Sequence(lambda n: n % 2)
 
 
 class MinimalPersonFactory(factory.django.DjangoModelFactory):

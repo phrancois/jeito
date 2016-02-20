@@ -2,6 +2,7 @@ from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, HTML
 from .utils import first_season, current_season
+from .models import Rate
 
 
 class AdhesionsForm(forms.Form):
@@ -11,7 +12,7 @@ class AdhesionsForm(forms.Form):
     ]
     season = forms.ChoiceField(label="Saison", choices=season_choices)
     reference = forms.ChoiceField(label="Référence", choices=[(None, "Année N-1")] + season_choices)
-    committed = forms.BooleanField(label="Uniquement les engagés associatifs")
+    category = forms.ChoiceField(label="Catégorie", choices=[(None, "Toutes")] + list(Rate.CATEGORY_CHOICES))
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -22,7 +23,7 @@ class AdhesionsForm(forms.Form):
         self.helper.layout = Layout(
             'season',
             'reference',
-            'committed',
+            'category',
             HTML("""<button type="submit" class=\"btn btn-success\">
                     <span class="glyphicon glyphicon-ok-sign"></span> Appliquer
                     </button>"""),
