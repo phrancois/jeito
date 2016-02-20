@@ -10,10 +10,13 @@ env:
   - CFLAGS=-O0
 install:
   - pip install -U pip wheel
+  - pip install coveralls
   - pip install -r requirements.txt
 before_script:
   - psql -c 'create database jeito;' -U postgres
   - cp jeito/settings_travis.py jeito/settings_local.py
 script:
   - flake8
-  - PYTHONPATH=. DJANGO_SETTINGS_MODULE=jeito.settings_local django-admin test
+  - coverage run manage.py test
+after_success:
+  - coveralls
