@@ -18,7 +18,7 @@ class FunctionAdmin(admin.ModelAdmin):
 
 @admin.register(Rate)
 class RateAdmin(admin.ModelAdmin):
-    list_display = ('name', 'bracket', 'committed')
+    list_display = ('name', 'rate', 'rate_after_tax_ex', 'bracket', 'committed')
     list_filter = ('committed', 'bracket')
     search_fields = ('name', )
 

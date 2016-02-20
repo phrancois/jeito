@@ -12,6 +12,8 @@
 
 {% block content %}
 
+<h1>Cumul des adhésion sur une saison</h1>
+
 <div class="alert alert-danger" role="alert">
   ATTENTION !!! Ces chiffres sont publiés sous réserve de validité des informations exportées par le portail
   <a href="http//entrecles.eedf.fr">Entréclés</a>
@@ -21,7 +23,7 @@
 
 <div class="ct-chart ct-minor-seventh"></div>
 
-<p id="info"></p>
+<p id="comment"></p>
 
 {% endblock content %}
 
@@ -64,7 +66,7 @@
   };
   $.getJSON("{% url 'members:adhesions_data' %}?season={{ season }}{% if reference %}&reference={{ reference }}{% endif %}{% if committed != None %}&committed={{ committed|yesno:'on,off' }}{% endif %}", function(data) {
     new Chartist.Line('.ct-chart', data, options);
-    $('#info').html(data['comment']);
+    $('#comment').html(data['comment']);
   });
 </script>
 

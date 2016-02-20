@@ -77,3 +77,7 @@ table.docs .label {
 .form-inline button {
   margin-left: 20px;
 }
+
+#comment {
+  margin-top: 20px;
+}

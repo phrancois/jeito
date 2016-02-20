@@ -103,15 +103,22 @@ class TranchesJsonView(View):
 
     def get(self, request):
         qs = Adhesion.objects.filter(season=2016, rate__name__icontains='enfant')
-        # qs = qs.exclude(rate__name__startswith='1er')
-        qs = qs.order_by('rate__bracket')
-        qs = qs.values('rate__bracket')
-        qs = qs.annotate(n=Count('id'))
-        total = sum(x['n'] for x in qs)
+        qs1 = qs.order_by('rate__bracket')
+        qs1 = qs1.values('rate__bracket')
+        qs1 = qs1.annotate(n=Count('id'))
+        qs2 = qs.values('rate__name', 'rate__rate', 'rate__rate_after_tax_ex')
+        qs2 = qs2.annotate(n=Count('id'))
+        total1 = sum(x['n'] for x in qs1)
+        total2 = sum(x['n'] for x in qs2)
+        assert total1 == total2
+        average_price = sum([x['n'] * x['rate__rate'] for x in qs2]) / total2
+        average_price_after_tax_ex = sum([x['n'] * x['rate__rate_after_tax_ex'] for x in qs2]) / total2
         data = {
-            'labels': [x['rate__bracket'] + ' (%0.0f %%)' % (100 * x['n'] / total) for x in qs],
-            'series': [x['n'] for x in qs],
-            'comment': '',
+            'labels': [x['rate__bracket'] + ' (%0.0f %%)' % (100 * x['n'] / total1) for x in qs1],
+            'series': [x['n'] for x in qs1],
+            'comment': """Cotisation moyenne : <strong>{:0.02f} €</strong>
+                          ({:0.02f} € après défiscalisation)
+                          """.format(float(average_price), float(average_price_after_tax_ex)),
         }
         return JsonResponse(data)
 

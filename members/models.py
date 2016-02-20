@@ -52,9 +52,13 @@ class Function(models.Model):
 
 
 class Rate(models.Model):
-    name = models.CharField("Tarif", max_length=256, unique=True)
-    committed = models.BooleanField("Engagé associatif", default=False)
+    name = models.CharField("Nom", max_length=256, unique=True)
+    rate = models.DecimalField("Tarif", max_digits=5, decimal_places=2, null=True, blank=True)
+    rate_after_tax_ex = models.DecimalField(
+        "Tarif après défiscalisation", max_digits=5, decimal_places=2,
+        null=True, blank=True)
     bracket = models.CharField("Tranche", max_length=100, blank=True)
+    committed = models.BooleanField("Engagé associatif", default=False)
 
     def __str__(self):
         return self.name
